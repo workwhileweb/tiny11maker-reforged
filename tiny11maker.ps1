@@ -21,7 +21,7 @@ $ResSplashPath = "$($PSScriptRoot -replace '\\', '/')/resources/T11M_splash.png"
 
 # GUI variables
 $AppTitle = "Tiny11 Maker ~ Reforged Edition"
-$AppVersion = "v2025.11.17"
+$AppVersion = "v2025.11.17 / HotFix:2025.12.18"
 $Mode = 0
 $Screen = 0
 $Index = 0

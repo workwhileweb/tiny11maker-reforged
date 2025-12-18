@@ -2,7 +2,7 @@
 
 $modulePath = $PSScriptRoot -replace '\\', '/'
 $moduleName = "tiny11gui"
-$moduleVersion = "2025.11.17"
+$moduleVersion = "2025.12.18"
 $moduleAuthor = "chrisGrando"
 $moduleCompany = "Tiny11Maker"
 $moduleDescription = "Module intended for the UI of tiny11maker script."
@@ -187,9 +187,9 @@ function Validate-NextStep {
     # Mounted drive doesn't contain a Windows setup image
     if ($MODE_SELECT -eq 2) {
         $hasESD = Test-Path "$(Get-SelectedDrive)sources\install.esd"
-        $hasWIN = Test-Path "$(Get-SelectedDrive)sources\install.win"
+        $hasWIM = Test-Path "$(Get-SelectedDrive)sources\install.wim"
         
-        if ((-not $hasESD) -and (-not $hasWIN)) {
+        if ((-not $hasESD) -and (-not $hasWIM)) {
             Invoke-PopupError -title "Setup not found" -message "$(Get-SelectedDrive) doesn't contain setup files!"
             return $null
         }

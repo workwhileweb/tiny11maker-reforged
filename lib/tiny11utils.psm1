@@ -2,7 +2,7 @@
 
 $modulePath = $PSScriptRoot -replace '\\', '/'
 $moduleName = "tiny11utils"
-$moduleVersion = "2025.11.17"
+$moduleVersion = "2025.12.18"
 $moduleAuthor = "chrisGrando"
 $moduleCompany = "Tiny11Maker"
 $moduleDescription = "Module intended for commom functions of tiny11maker script."
@@ -97,12 +97,12 @@ function Find-AllAvaliableEditions {
 
     # If install.esd doesn't exists, try install.wim
     if (-not (Test-Path $InstallDataPath)) {
-        $InstallDataPath = "$($isoDrive)sources\install.win"
+        $InstallDataPath = "$($isoDrive)sources\install.wim"
     }
 
-    # If install.win doesn't exists either, then give up
+    # If install.wim doesn't exists either, then give up
     if (-not (Test-Path $InstallDataPath)) {
-        Write-Error "Unable to find file `"install.esd`" or `"install.win`""
+        Write-Error "Unable to find file `"install.esd`" or `"install.wim`""
         return @("No image index found")
     }
 
