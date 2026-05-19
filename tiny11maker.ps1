@@ -2,7 +2,11 @@
 # Set-PSDebug -Trace 1
 
 param (
-    [string]$ScratchDisk
+    [string]$ScratchDisk,
+    # Hạ ưu tiên CPU so với app khác trong giai đoạn copy/DISM/nén (ISO có thể lớn hơn một chút nếu bật FastCompression).
+    [switch]$LowPriority,
+    # Dùng /Compress:fast thay vì max cho bước export WIM — giảm CPU và thời gian, file install.wim lớn hơn.
+    [switch]$FastCompression
 )
 
 if (-not $ScratchDisk) {
@@ -185,6 +189,17 @@ if ($Screen -ne 2) {
 # Close window
 $MainForm.Close()
 
+if ($LowPriority) {
+    try {
+        [System.Diagnostics.Process]::GetCurrentProcess().PriorityClass = [System.Diagnostics.ProcessPriorityClass]::BelowNormal
+        Write-Host "Đã đặt mức ưu tiên tiến trình: Below Normal (giảm ảnh hưởng tới app khác)."
+    }
+    catch {
+        Write-Host "Không thể đổi mức ưu tiên tiến trình: $_"
+    }
+}
+
+$wimCompress = if ($FastCompression) { 'fast' } else { 'max' }
 Write-Host "Using image index: $Index"
 
 # Convert install.esd to install.wim if file is present
@@ -192,7 +207,7 @@ $ConvertedFromESD = $false
 if ((Test-Path "$($DrivePath)sources\install.esd") -eq $true) {
     $ConvertedFromESD = $true
     Write-Host 'Converting install.esd to install.wim. This may take a while...'
-    & 'DISM' /English /Export-Image /SourceImageFile:"$($DrivePath)sources\install.esd" /SourceIndex:$Index /DestinationImageFile:"$($ScratchDisk)\tiny11\sources\install.wim" /Compress:max /CheckIntegrity
+    & 'DISM' /English /Export-Image /SourceImageFile:"$($DrivePath)sources\install.esd" /SourceIndex:$Index /DestinationImageFile:"$($ScratchDisk)\tiny11\sources\install.wim" /Compress:$wimCompress /CheckIntegrity
 }
 
 Write-Host "Copying Windows image..."
@@ -546,7 +561,7 @@ Write-Host "Unmounting image..."
 & 'DISM' /English /Unmount-Image /MountDir:"$($ScratchDisk)\scratchdir" /Commit
 
 Write-Host "Exporting image..."
-& 'DISM' /English /Export-Image /SourceImageFile:"$($ScratchDisk)\tiny11\sources\install.wim" /SourceIndex:"$Index" /DestinationImageFile:"$($ScratchDisk)\tiny11\sources\install2.wim" /Compress:max
+& 'DISM' /English /Export-Image /SourceImageFile:"$($ScratchDisk)\tiny11\sources\install.wim" /SourceIndex:"$Index" /DestinationImageFile:"$($ScratchDisk)\tiny11\sources\install2.wim" /Compress:$wimCompress
 Remove-Item -Path "$($ScratchDisk)\tiny11\sources\install.wim" -Force | Out-Null
 Rename-Item -Path "$($ScratchDisk)\tiny11\sources\install2.wim" -NewName "install.wim" | Out-Null
 Write-Host "Windows image completed. Continuing with boot.wim."

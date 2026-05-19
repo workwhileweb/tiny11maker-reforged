@@ -7,12 +7,14 @@ $moduleAuthor = "chrisGrando"
 $moduleCompany = "Tiny11Maker"
 $moduleDescription = "Module intended for commom functions of tiny11maker script."
 
-New-ModuleManifest -Path "$modulePath/$moduleName.psd1" `
-    -RootModule $moduleName `
-    -ModuleVersion $moduleVersion `
-    -Author $moduleAuthor `
-    -CompanyName $moduleCompany `
-    -Description $moduleDescription
+if (-not (Test-Path "$modulePath/$moduleName.psd1")) {
+    New-ModuleManifest -Path "$modulePath/$moduleName.psd1" `
+        -RootModule $moduleName `
+        -ModuleVersion $moduleVersion `
+        -Author $moduleAuthor `
+        -CompanyName $moduleCompany `
+        -Description $moduleDescription
+}
 
 #### GLOBAL VARIABLES FIELD ####
 
@@ -74,10 +76,12 @@ function Enable-Privilege {
     )
 
     $srcFilePath = "$($MODULE_ROOT)/AdjPriv.cs"
-    $srcAdjPriv = Get-Content -Path $srcFilePath -Raw
-    $processHandle = (Get-Process -id $ProcessId).Handle
-    $type = Add-Type -TypeDefinition $srcAdjPriv -PassThru
-    $type[0]::EnablePrivilege($processHandle, $Privilege, $Disable)
+    if (-not ('AdjPriv' -as [type])) {
+        $srcAdjPriv = Get-Content -Path $srcFilePath -Raw
+        $null = Add-Type -TypeDefinition $srcAdjPriv
+    }
+    $processHandle = (Get-Process -Id $ProcessId).Handle
+    [AdjPriv]::EnablePrivilege([long]$processHandle, $Privilege, [bool]$Disable)
 }
 
 ## Lists all avaliable file system drives in the machine

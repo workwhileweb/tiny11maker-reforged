@@ -1,0 +1,11 @@
+[@tiny11maker.ps1](file:///C:/Users/workw/Downloads/tiny11maker-reforged/tiny11maker.ps1) đọc kỹ, phân tích các optimizer script này thực hiện, đề xuất các cải tiến và more mod? code hiện tại chiếm dụng cpu rất lớn, làm các app khác gần như treo cứng, có thể cải tiến để chạy ngầm hoặc giảm lượng cpu không?
+
+
+Đề xuất “more mod” / tinh chỉnh thêm (chưa code)
+Tùy chọn bỏ /ResetBase hoặc chỉ StartComponentCleanup không reset base → build nhanh hơn, image có thể lớn hơn.
+Robocopy thay Copy-Item với /MT:2 hoặc /IPG để giảm bão đĩa (chậm hơn nhưng mượt hơn cho hệ thống).
+CLI không GUI: -IsoPath, -Drive, -Index, -NoGui để chạy từ task / scheduler minimized.
+Sửa filter Appx (đoạn packagesToRemove với -contains và Where-Object lồng nhau trông không đúng logic prefix; có thể là bug hoặc may khớp tình cờ).
+Mod registry/app list theo “preset”: Gaming / Office / Minimal.
+Trùng Microsoft.WindowsTerminal trong $packagePrefixes (hai lần) — có thể gọn lại.
+

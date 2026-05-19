@@ -7,12 +7,14 @@ $moduleAuthor = "chrisGrando"
 $moduleCompany = "Tiny11Maker"
 $moduleDescription = "Module intended for the UI of tiny11maker script."
 
-New-ModuleManifest -Path "$modulePath/$moduleName.psd1" `
-    -RootModule $moduleName `
-    -ModuleVersion $moduleVersion `
-    -Author $moduleAuthor `
-    -CompanyName $moduleCompany `
-    -Description $moduleDescription
+if (-not (Test-Path "$modulePath/$moduleName.psd1")) {
+    New-ModuleManifest -Path "$modulePath/$moduleName.psd1" `
+        -RootModule $moduleName `
+        -ModuleVersion $moduleVersion `
+        -Author $moduleAuthor `
+        -CompanyName $moduleCompany `
+        -Description $moduleDescription
+}
 
 #### GLOBAL VARIABLES FIELD ####
 
@@ -97,7 +99,7 @@ function Set-DrivesList {
         [string[]]$list
     )
 
-    $LIST_DRIVES = $list
+    $script:LIST_DRIVES = $list
 }
 
 ## Sets a list of avaliable Windows 11 editions
@@ -107,7 +109,7 @@ function Set-EditionsList {
         [string[]]$list
     )
 
-    $LIST_EDITIONS = $list
+    $script:LIST_EDITIONS = $list
 }
 
 ## Auto-Detects which drive has a Windows setup image
@@ -135,9 +137,10 @@ function Update-EventLoop {
         [int]$stage
     )
 
+    # DoEvents quá dày sẽ tốn CPU; 100ms vẫn đủ mượt cho form tĩnh.
     while (-not $WINDOW_CLOSED -and $SCREEN_STAGE -eq $stage) {
         [System.Windows.Forms.Application]::DoEvents()
-        Start-Sleep -Milliseconds 33 # ~30 FPS
+        Start-Sleep -Milliseconds 100
     }
 }
 
